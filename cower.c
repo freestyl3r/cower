@@ -263,7 +263,7 @@ static int keycmp(const void *v1, const void *v2);
 static alpm_list_t *load_targets_from_files(alpm_list_t *files);
 static void openssl_crypto_cleanup(void);
 static void openssl_crypto_init(void);
-static unsigned long openssl_thread_id(void) __attribute__ ((const));
+static void openssl_thread_id(CRYPTO_THREADID *id);
 static void openssl_thread_cb(int, int, const char*, int);
 static alpm_list_t *parse_bash_array(alpm_list_t*, char*, pkgdetail_t);
 static int parse_configfile(void);
@@ -1253,7 +1253,7 @@ void openssl_crypto_init(void)
 		pthread_mutex_init(&(openssl_lock.lock[i]), NULL);
 	}
 
-	CRYPTO_set_id_callback(openssl_thread_id);
+	CRYPTO_THREADID_set_callback(openssl_thread_id);
 	CRYPTO_set_locking_callback(openssl_thread_cb);
 }
 
@@ -1269,9 +1269,9 @@ void openssl_thread_cb(int mode, int type, const char UNUSED *file,
 	}
 }
 
-unsigned long openssl_thread_id(void)
+void openssl_thread_id(CRYPTO_THREADID *id)
 {
-	return pthread_self();
+	CRYPTO_THREADID_set_numeric(id, pthread_self());
 }
 
 alpm_list_t *parse_bash_array(alpm_list_t *deplist, char *array, pkgdetail_t type)
