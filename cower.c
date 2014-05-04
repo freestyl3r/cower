@@ -929,7 +929,7 @@ int getcols(void)
 	const int default_tty = 80;
 	const int default_notty = 0;
 
-	if(!isatty(fileno(stdout))) {
+	if(!isatty(STDOUT_FILENO)) {
 		return default_notty;
 	}
 
@@ -1430,7 +1430,7 @@ int parse_configfile(void)
 		} else if(streq(key, "Color")) {
 			if(cfg.color == kUnset) {
 				if(!val || streq(val, "auto")) {
-					if(isatty(fileno(stdout))) {
+					if(isatty(STDOUT_FILENO)) {
 						cfg.color = 1;
 					} else {
 						cfg.color = 0;
@@ -1528,7 +1528,7 @@ int parse_options(int argc, char *argv[])
 				break;
 			case 'c':
 				if(!optarg || streq(optarg, "auto")) {
-					if(isatty(fileno(stdout))) {
+					if(isatty(STDOUT_FILENO)) {
 						cfg.color = 1;
 					} else {
 						cfg.color = 0;
